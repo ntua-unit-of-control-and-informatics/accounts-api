@@ -124,7 +124,7 @@ func UpdateInvitation(w http.ResponseWriter, r *http.Request) {
 		}
 		if !utils.Contains(user.Organizations, org.Id) {
 			user.Organizations = append(user.Organizations, org.Id)
-			user, err = usersHandler.UpdateUser(user)
+			user, err = usersHandler.UpdateUserOrganizations(user)
 		}
 		if err != nil {
 			err := models.ErrorReport{

@@ -1,0 +1,58 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: accounts-api
+  namespace: accounts
+spec:
+  selector:
+    app: accounts-api
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: accounts-api-nodeport
+  namespace: accounts
+spec:
+  type: NodePort
+  selector:
+    app: accounts-api
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000
+    nodePort: 30181
+---
+apiVersion: apps/v1 # for versions before 1.8.0 use apps/v1
+kind: Deployment
+metadata:
+  name: accounts-api
+  namespace: accounts
+spec:
+  selector:
+    matchLabels:
+      app: accounts-api
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template: # create pods using pod definition in this template
+    metadata:
+      name: accounts-api
+      labels:
+        app: accounts-api
+    spec:
+      containers:
+      - name: accounts-api
+        image: hub.jaqpot.org/accounts-api
+        ports:
+        - containerPort: 8000
+        env:
+          - name: MONGO_URL
+            value: mongodb://jaqpot-mongodb-0.jaqpot-mongodb.jaqpot,jaqpot-mongodb-1.jaqpot-mongodb.jaqpot,jaqpot-mongodb-2.jaqpot-mongodb.jaqpot.svc.cluster.local:27017
+          - name: DATABASE
+            value: accounts
+          - name: OIDC_PROVIDER
+            value: "http://192.168.10.80:30100/auth/realms/jaqpot"
+      imagePullSecrets:
+        - name: jaqpothub-secret

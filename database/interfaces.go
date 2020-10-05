@@ -15,6 +15,7 @@ type IUsersDao interface {
 	FindUserByEmail(email string) (userFound models.User, err error)
 	SearchUserByNameAndMail(name string) (counted int, orgsFound []*models.User, err error)
 	UpdateUserNames(user models.User) (userUpdated models.User, err error)
+	UpdateUserName(user models.User) (userUpdated models.User, err error)
 	FindOrgsUsers(org string) (counted int, orgsFound []*models.User, err error)
 	UpdateUserOrganizations(user models.User) (userUpdated models.User, err error)
 }

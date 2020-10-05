@@ -3,6 +3,8 @@ github.com/coreos/go-oidc v2.1.0+incompatible h1:sdJrfw8akMnCuUlaZU3tE/uYXFgfqom
 github.com/coreos/go-oidc v2.1.0+incompatible/go.mod h1:CgnwVTmzoESiwO9qyAFEMiHoZ1nMCKZlZ9V6mm3/LKc=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/euclia/go-oidc v2.2.1+incompatible h1:u90I/VuL9b8v+dYSQjpwkZea3Ua5UDRGLcMKPm138Nc=
+github.com/euclia/go-oidc v2.2.1+incompatible/go.mod h1:pHnvM3TkLHs+wMdhab1g1QteHgzHpOOajMuOQETZI5c=
 github.com/euclia/goquots v0.0.0-20191105111445-dc66133da39a h1:R6Xfz9wojYk7C83OWaVMErikOFrUjOb5wV6t9GTFhYE=
 github.com/euclia/goquots v0.0.0-20191105111445-dc66133da39a/go.mod h1:aYgVftdw7d8U6XPM0XHRt7xQ1JMBWOTT5206Qo+4KHU=
 github.com/go-stack/stack v1.8.0 h1:5SgMzNM5HxrEjV0ww2lTmX6E2Izsfxas4+YHWRs3Lsk=

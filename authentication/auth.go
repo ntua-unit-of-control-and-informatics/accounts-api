@@ -19,7 +19,8 @@ func Init() {
 	log.Println("Starting oidc configuration")
 	oidcProvider := os.Getenv("OIDC_PROVIDER")
 	if oidcProvider == "" {
-		oidcProvider = "https://login.jaqpot.org/auth/realms/jaqpot"
+		// oidcProvider = "https://login.jaqpot.org/auth/realms/jaqpot"
+		oidcProvider = "http://192.168.10.100:30100/auth/realms/jaqpot"
 		// oidcProvider = "https://login.cloud.nanosolveit.eu/auth/realms/nanosolveit"
 	}
 
@@ -53,6 +54,7 @@ func Init() {
 	oidcConfig := &oidc.Config{
 		ClientID:          clientID,
 		SkipClientIDCheck: true,
+		SkipIssuerCheck:   true,
 	}
 	keyset = oidc.NewRemoteKeySet(ctx, oidcProvider)
 

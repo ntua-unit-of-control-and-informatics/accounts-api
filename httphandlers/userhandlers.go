@@ -23,6 +23,31 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	min := r.FormValue("min")
 	max := r.FormValue("max")
 	email := r.FormValue("email")
+	id := r.FormValue("id")
+	if id != "" {
+		userG, err := usersHandler.GetUserById(id)
+		quotsU, err := QuotsClient.GetUser(id)
+		if err != nil {
+			err := models.ErrorReport{
+				Message: err.Error(),
+				Status:  http.StatusNotFound,
+			}
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(err)
+			return
+		}
+		userG.Credits = quotsU.Credits
+		for _, s := range quotsU.SpentOn {
+			var sp models.Spent
+			sp.Appid = s.AppId
+			sp.Usage = s.Usage
+			userG.Spenton = append(userG.Spenton, sp)
+		}
+		var ar [1]models.User
+		ar[0] = userG
+		json.NewEncoder(w).Encode(ar)
+		return
+	}
 	if min == "" && max == "" {
 		apiAll := r.Header.Get("Authorization")
 		apiKeyAr := strings.Split(apiAll, " ")
@@ -46,7 +71,10 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 					sp.Usage = s.Usage
 					userCreated.Spenton = append(userCreated.Spenton, sp)
 				}
-				json.NewEncoder(w).Encode(userCreated)
+				var ar [1]models.User
+				ar[0] = userCreated
+				json.NewEncoder(w).Encode(ar)
+				return
 			} else {
 				err := models.ErrorReport{
 					Message: err.Error(),
@@ -54,9 +82,15 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 				}
 				w.WriteHeader(http.StatusNotFound)
 				json.NewEncoder(w).Encode(err)
+				return
 			}
 		}
-		quotsU, err := QuotsClient.GetUser(claims.Subject)
+		var quotsU goquots.QuotsUser
+		quotsU, err = QuotsClient.GetUser(claims.Subject)
+		if quotsU.Id == "" {
+			QuotsClient.CreateUser(claims.Subject, claims.Name, claims.Email)
+			quotsU, err = QuotsClient.GetUser(claims.Subject)
+		}
 		userG.Credits = quotsU.Credits
 		for _, s := range quotsU.SpentOn {
 			var sp models.Spent
@@ -71,9 +105,18 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 			userToUp.GivenName = claims.GivenName
 			usersHandler.UpdateUserNames(userToUp)
 			userGUpdatd, _ := usersHandler.GetUserById(claims.Subject)
+			quotsU, err = QuotsClient.GetUser(claims.Subject)
+			userGUpdatd.Credits = quotsU.Credits
+			for _, s := range quotsU.SpentOn {
+				var sp models.Spent
+				sp.Appid = s.AppId
+				sp.Usage = s.Usage
+				userG.Spenton = append(userG.Spenton, sp)
+			}
 			var ar [1]models.User
 			ar[0] = userGUpdatd
 			json.NewEncoder(w).Encode(ar)
+			return
 		}
 		var ar [1]models.User
 		ar[0] = userG
@@ -89,10 +132,12 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 			}
 			w.WriteHeader(http.StatusNotFound)
 			json.NewEncoder(w).Encode(err)
+			return
 		} else {
 			var ar [1]models.User
 			ar[0] = user
 			json.NewEncoder(w).Encode(ar)
+			return
 		}
 	} else {
 		minval, err := strconv.ParseInt(min, 10, 64)
@@ -105,10 +150,12 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 			}
 			w.WriteHeader(http.StatusNotFound)
 			json.NewEncoder(w).Encode(err)
+			return
 		} else {
 			t := strconv.FormatInt(total, 10)
 			w.Header().Add("total", t)
 			json.NewEncoder(w).Encode(users)
+			return
 		}
 	}
 }
@@ -285,6 +332,9 @@ func createUser(claims auth.OidcClaims, c chan models.User) {
 	user.Email = claims.Email
 	user.FamilyName = claims.FamilyName
 	user.GivenName = claims.GivenName
+	// var orgArray []string
+	// orgArray[0] = "Everyone"
+	// user.Organizations = orgArray
 	userC, err := usersHandler.CreateUser(user)
 	if err != nil {
 		log.Println(err.Error())
@@ -295,6 +345,7 @@ func createUser(claims auth.OidcClaims, c chan models.User) {
 
 func createQuotsUser(claims auth.OidcClaims, c chan goquots.QuotsUser) {
 	quo, err := QuotsClient.GetUser(claims.Subject)
+	log.Println(quo.Id)
 	if err != nil {
 		quo, err := QuotsClient.CreateUser(claims.Subject, claims.PreferedUsername, claims.Email)
 		if err != nil {
@@ -302,6 +353,16 @@ func createQuotsUser(claims auth.OidcClaims, c chan goquots.QuotsUser) {
 		}
 		c <- quo
 		close(c)
+		return
+	}
+	if quo.Id == "" {
+		quo, err := QuotsClient.CreateUser(claims.Subject, claims.PreferedUsername, claims.Email)
+		if err != nil {
+			log.Println(err.Error())
+		}
+		c <- quo
+		close(c)
+		return
 	}
 	c <- quo
 	close(c)

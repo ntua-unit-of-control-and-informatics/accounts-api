@@ -1,6 +1,7 @@
 package httphandlers
 
 import (
+	"log"
 	"os"
 
 	quots "github.com/euclia/goquots"
@@ -13,14 +14,19 @@ func InitQuots() {
 	appId := os.Getenv("QUOTS_APP")
 	appSecret := os.Getenv("QUOTS_SECRET")
 	if quotsBase == "" {
-		quotsBase = "http://localhost:8000"
+		quotsBase = "http://192.168.10.100:30180"
+		// quotsBase = "http://localhost:8000"
 	}
 	if appId == "" {
-		appId = "GOQUOTS"
+		// appId = "GOQUOTS"
+		appId = "JAQPOT-ACCOUNTS"
 	}
 	if appSecret == "" {
-		appSecret = "IlFELGMLf^BmJg2MVV"
+		// appSecret = "IlFELGMLf^BmJg2MVV"
+		appSecret = "LqnYUFPm*sDnGAXiGl"
 	}
+	log.Println("Starting quots at " + quotsBase + " with quots app " + appId)
+
 	var q quots.IQuots
 	q = quots.InitQuots(quotsBase, appId, appSecret)
 	QuotsClient = q

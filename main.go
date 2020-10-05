@@ -1,11 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-
-	"encoding/json"
+	"os"
 
 	auth "euclia.xyz/accounts-api/authentication"
 	db "euclia.xyz/accounts-api/database"
@@ -68,9 +68,11 @@ func main() {
 	r.HandleFunc("/invitation", mid.AuthMiddleware(httphandlers.UpdateInvitation)).Queries("answer", "{answer}").Methods("PUT")
 	r.HandleFunc("/invitation", mid.AuthMiddleware(httphandlers.GetInvitation)).Queries("min", "{min}").Queries("max", "{max}").Queries("email", "{email}").Queries("viewed", "{viewed}").Methods("GET")
 	// r.HandleFunc("/users", httphandlers.GetUser).Queries("id", "{id}").Queries("min", "{min}").Queries("max", "{max}").Queries("email", "{email}").Methods("GET")
+	loggedRouter := handlers.LoggingHandler(os.Stdout, r)
+
 	allowedOrigins := handlers.AllowedOrigins([]string{"*"})
 	allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "DELETE", "PUT", "OPTIONS"})
 	allowedHeaders := handlers.AllowedHeaders([]string{"*"})
 	exposedHeaders := handlers.ExposedHeaders([]string{"*"})
-	log.Fatal(http.ListenAndServe(":8006", handlers.CORS(allowedOrigins, allowedHeaders, allowedMethods, exposedHeaders, handlers.IgnoreOptions())(r)))
+	log.Fatal(http.ListenAndServe(":8006", handlers.CORS(allowedOrigins, allowedHeaders, allowedMethods, exposedHeaders, handlers.IgnoreOptions())(loggedRouter)))
 }

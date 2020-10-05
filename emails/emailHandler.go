@@ -68,7 +68,7 @@ func SendInvitation(userGivenName string, toEmail string, fromBody string, orgTi
 		toEmail,
 	}
 	message := []byte(
-		"Subject:" + userGivenName + " invited you to join his organization\r\n" +
+		"Subject:" + userGivenName + " invited you to join his / her organization\r\n" +
 			"\r\n" +
 			userGivenName +
 			" sent you an invitation to join " + orgTitle + ". \n \n" +

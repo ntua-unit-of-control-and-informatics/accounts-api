@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	github.com/coreos/go-oidc v2.1.0+incompatible
+	github.com/euclia/go-oidc v2.2.1+incompatible
 	github.com/euclia/goquots v0.0.0-20191105111445-dc66133da39a
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
