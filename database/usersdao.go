@@ -43,16 +43,32 @@ func (uDao *UsersDao) DeleteUser(id string) (userDeleted int64, err error) {
 
 // Updates User
 func (uDao *UsersDao) UpdateUser(user models.User) (userUpdated models.User, err error) {
-	filter := bson.D{primitive.E{Key: "_id", Value: user.Id}}
-	update := bson.M{"$set": bson.M{"preferred_username": user.PreferedUsername, "meta": user.MetaInfo, "occupation": user.Occupation, "occupation_at": user.OccupationAt, "given_name": user.GivenName, "name": user.Name, "family_name": user.FamilyName}}
-	// resp, erro := db.Collection(COLLECTION).UpdateOne(context.TODO(), filter, update)
+	filter := bson.M{"_id": user.Id}
+	update := bson.M{
+		"$set": bson.M{
+			"preferred_username": user.PreferedUsername,
+			"meta":               user.MetaInfo,
+			"occupation":         user.Occupation,
+			"occupation_at":      user.OccupationAt,
+			"given_name":         user.GivenName,
+			"name":               user.Name,
+			"family_name":        user.FamilyName,
+		},
+	}
 	_, erro := db.Collection(USERSCOLLECTION).UpdateOne(context.TODO(), filter, update)
 	return user, erro
 }
 
 func (uDao *UsersDao) UpdateUserNames(user models.User) (userUpdated models.User, err error) {
 	filter := bson.D{primitive.E{Key: "_id", Value: user.Id}}
-	update := bson.M{"$set": bson.M{"given_name": user.GivenName, "name": user.Name, "family_name": user.FamilyName}}
+	update := bson.M{
+		"$set": bson.M{
+			"given_name":  user.GivenName,
+			"name":        user.Name,
+			"family_name": user.FamilyName,
+			"email":       user.Email,
+		},
+	}
 	_, erro := db.Collection(USERSCOLLECTION).UpdateOne(context.TODO(), filter, update)
 	return user, erro
 }

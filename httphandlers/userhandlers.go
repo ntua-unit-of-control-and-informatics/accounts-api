@@ -100,9 +100,11 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		}
 		if userG.Name != claims.Name || userG.GivenName != claims.GivenName || userG.FamilyName != claims.FamilyName {
 			var userToUp models.User
+			userToUp.Id = userG.Id
 			userToUp.Name = claims.Name
 			userToUp.FamilyName = claims.FamilyName
 			userToUp.GivenName = claims.GivenName
+			userToUp.Email = claims.Email
 			usersHandler.UpdateUserNames(userToUp)
 			userGUpdatd, _ := usersHandler.GetUserById(claims.Subject)
 			quotsU, err = QuotsClient.GetUser(claims.Subject)
