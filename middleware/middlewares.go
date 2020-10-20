@@ -47,6 +47,14 @@ func (a *AuthImplementation) AuthMiddleware(h http.HandlerFunc) http.HandlerFunc
 				json.NewEncoder(w).Encode(err)
 				return
 			}
+		} else {
+			err := models.ErrorReport{
+				Message: "Not authorized",
+				Status:  http.StatusUnauthorized,
+			}
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(err)
+			return
 		}
 
 		h.ServeHTTP(w, r)
