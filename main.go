@@ -10,9 +10,7 @@ import (
 	auth "euclia.xyz/accounts-api/authentication"
 	db "euclia.xyz/accounts-api/database"
 	email "euclia.xyz/accounts-api/emails"
-
 	httphandlers "euclia.xyz/accounts-api/httphandlers"
-
 	middleware "euclia.xyz/accounts-api/middleware"
 
 	"github.com/gorilla/handlers"
@@ -45,6 +43,7 @@ func optionsHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	fmt.Println("Starting the application...")
+
 	auth.Init()
 	// conf := config.Init()
 	// app := &App{config: conf}
